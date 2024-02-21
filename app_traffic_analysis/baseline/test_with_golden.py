@@ -16,13 +16,17 @@ import re
 import time
 import sys
 import numpy as np
+import traceback as tb
+from sklearn.cluster import KMeans
 
 # Load environ variables from .env, will not override existing environ variables
 load_dotenv()
 
 EACH_PROMPT_RUN_TIME = 1
 OUTPUT_JSONL_PATH = 'logs/node10_log.jsonl'
+OUTPUT_EXCEPTIONS_PATH = "logs/node10_exceptions_log.jsonl"
 GRAPH_PATH = "../data/graph_data/node10.json"
+
 
 def count_tokens(chain, query):
     with get_openai_callback() as cb:
@@ -30,6 +34,7 @@ def count_tokens(chain, query):
         print(f'Spent a total of {cb.total_tokens} tokens')
 
     return cb.total_tokens
+
 
 def getGraphData():
     dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -41,13 +46,15 @@ def getGraphData():
 
     return rawData
 
+
 def node_attributes_are_equal(node1_attrs, node2_attrs):
     # Check if "size", "color", and "labels" are equal for two nodes
     return (
-        node1_attrs["size"] == node2_attrs["size"] and
-        node1_attrs["color"] == node2_attrs["color"] and
-        node1_attrs["labels"] == node2_attrs["labels"]
+            node1_attrs["size"] == node2_attrs["size"] and
+            node1_attrs["color"] == node2_attrs["color"] and
+            node1_attrs["labels"] == node2_attrs["labels"]
     )
+
 
 def userQuery(prompt_list, graph_json):
     # Load the existing prompt and golden answers from Json
@@ -83,79 +90,96 @@ def userQuery(prompt_list, graph_json):
                 rawData = json.load(f)
 
             G = json_graph.node_link_graph(rawData)
-
-            print("Calling model")
-            answer = pyGraphNetExplorer.run(requestData['llm-prompt'])
-            llm_output_token_count = count_tokens(pyGraphNetExplorer, answer)
-            print("model returned")
-
-            if answer.startswith("Answer:\n'''"):
-                llm_answer = answer[12:-4]
-                print("llm_answer: ", llm_answer)
-            else:
-                print("Answer: ", answer)
-                raise SystemExit('Un-support model output format.')
-            # Format the output to a json object
-            json_string = '{' + llm_answer + '}'
-            ret = json.loads(json_string)
-
-            if ret['type'] == 'graph':
-                if isinstance(ret['data'], nx.Graph):
-                    # Create a nx.graph copy, so I can compare two nx.graph later directly
-                    ret_graph_copy = ret['data']
-                    jsonGraph = nx.node_link_data(ret['data'])
-                    ret['data'] = jsonGraph
-                    # Save the modified graph
-                    if "Create a new graph" in requestData['llm-prompt']:
-                        pass
-                    else:
-                        with open(graph_filename, "w") as f:
-                            json.dump(jsonGraph, f)
-
-                else:
-                    # Convert the jsonGraph back to nx.graph, to check if they are identical later
-                    ret_graph_copy = json_graph.node_link_graph(ret['data'])
+            #json_graph.adjacency_data(G)
 
             goldenAnswerCode = allAnswer[requestData['original-prompt']]
 
             # ground truth answer should already be checked to ensure it can run successfully
             exec(goldenAnswerCode)
             ground_truth_ret = eval("ground_truth_process_graph(G)")
-            # if the type of ground_truth_ret is string, turn it into a json object
-            if isinstance(ground_truth_ret, str):
-                ground_truth_ret = json.loads(ground_truth_ret)
 
-            # check type "text", "list", "table", "graph" separately.
-            if ground_truth_ret['type'] == 'text' or ground_truth_ret['type'] == 'list':
-                # if ret['data'] type is int, turn it into string
-                if isinstance(ret['data'], int):
-                    ret['data'] = str(ret['data'])
-                if isinstance(ground_truth_ret['data'], int):
-                    ground_truth_ret['data'] = str(ground_truth_ret['data'])
+            llm_answer = ''
+            llm_output_token_count = -1
 
-                if ground_truth_ret['data'] == ret['data']:
-                    prompt_accu = ground_truth_check_accu(prompt_accu, requestData, ground_truth_ret, ret, llm_output_token_count)
+            try:
+                print("Calling model")
+                answer = pyGraphNetExplorer.run(requestData['llm-prompt'])
+                llm_output_token_count = count_tokens(pyGraphNetExplorer, answer)
+                print("model returned")
+                if answer.startswith("Answer:\n'''"):
+                    llm_answer = answer[12:-4]
+                    if '}' in llm_answer:
+                        llm_answer = llm_answer.rsplit('}', 1)[0] + '}'
+                    print("llm_answer: ", llm_answer)
                 else:
-                    ground_truth_check_debug(requestData, ground_truth_ret, ret, llm_output_token_count)
+                    print("Answer: ", answer)
+                    raise SystemExit('Un-support model output format.')
 
-            elif ground_truth_ret['type'] == 'table':
-                if ground_truth_ret['data'] == ret['data']:
-                    prompt_accu = ground_truth_check_accu(prompt_accu, requestData, ground_truth_ret, ret, llm_output_token_count)
-                else:
-                    ground_truth_check_debug(requestData, ground_truth_ret, ret, llm_output_token_count)
 
-            elif ground_truth_ret['type'] == 'graph':
-                # Undirected graphs will be converted to a directed graph
-                # with two directed edges for each undirected edge.
-                ground_truth_graph = nx.Graph(ground_truth_ret['data'])
-                # TODO: fix ret_graph_copy reference possible error, when it's not created.
-                ret_graph = nx.Graph(ret_graph_copy)
+                # Format the output to a json object
+                json_string = '{' + llm_answer + '}'
+                ret = json.loads(json_string)
 
-                # Check if two graphs are identical, no weights considered
-                if nx.is_isomorphic(ground_truth_graph, ret_graph, node_match=node_attributes_are_equal):
-                    prompt_accu = ground_truth_check_accu(prompt_accu, requestData, ground_truth_ret, ret, llm_output_token_count)
-                else:
-                    ground_truth_check_debug(requestData, ground_truth_ret, ret, llm_output_token_count)
+                if ret['type'] == 'graph':
+                    if isinstance(ret['data'], nx.Graph):
+                        # Create a nx.graph copy, so I can compare two nx.graph later directly
+                        ret_graph_copy = ret['data']
+                        jsonGraph = nx.node_link_data(ret['data'])
+                        ret['data'] = jsonGraph
+                        # Save the modified graph
+                        if "Create a new graph" in requestData['llm-prompt']:
+                            pass
+                        else:
+                            with open(graph_filename, "w") as f:
+                                json.dump(jsonGraph, f)
+
+                    else:
+                        # Convert the jsonGraph back to nx.graph, to check if they are identical later
+                        ret_graph_copy = json_graph.node_link_graph(ret['data'])
+
+                # if the type of ground_truth_ret is string, turn it into a json object
+                if isinstance(ground_truth_ret, str):
+                    ground_truth_ret = json.loads(ground_truth_ret)
+
+                # check type "text", "list", "table", "graph" separately.
+                if ground_truth_ret['type'] == 'text' or ground_truth_ret['type'] == 'list':
+                    # if ret['data'] type is int, turn it into string
+                    if isinstance(ret['data'], int):
+                        ret['data'] = str(ret['data'])
+                    if isinstance(ground_truth_ret['data'], int):
+                        ground_truth_ret['data'] = str(ground_truth_ret['data'])
+
+                    if ground_truth_ret['data'] == ret['data']:
+                        prompt_accu = ground_truth_check_accu(prompt_accu, requestData, ground_truth_ret, ret,
+                                                              llm_output_token_count)
+                    else:
+                        ground_truth_check_debug(requestData, ground_truth_ret, ret, llm_output_token_count)
+
+                elif ground_truth_ret['type'] == 'table':
+                    if ground_truth_ret['data'] == ret['data']:
+                        prompt_accu = ground_truth_check_accu(prompt_accu, requestData, ground_truth_ret, ret,
+                                                              llm_output_token_count)
+                    else:
+                        ground_truth_check_debug(requestData, ground_truth_ret, ret, llm_output_token_count)
+
+                elif ground_truth_ret['type'] == 'graph':
+                    # Undirected graphs will be converted to a directed graph
+                    # with two directed edges for each undirected edge.
+                    ground_truth_graph = nx.Graph(ground_truth_ret['data'])
+                    # TODO: fix ret_graph_copy reference possible error, when it's not created.
+                    ret_graph = nx.Graph(ret_graph_copy)
+
+                    # Check if two graphs are identical, no weights considered
+                    if nx.is_isomorphic(ground_truth_graph, ret_graph, node_match=node_attributes_are_equal):
+                        prompt_accu = ground_truth_check_accu(prompt_accu, requestData, ground_truth_ret, ret,
+                                                              llm_output_token_count)
+                    else:
+                        ground_truth_check_debug(requestData, ground_truth_ret, ret, llm_output_token_count)
+
+            except Exception as e:
+                #e_msg = ''.join(tb.format_exception(None, e, e.__traceback__))
+                e_msg = ''.join(tb.format_exception(e))
+                exception_logging(requestData, ground_truth_ret, llm_answer, llm_output_token_count, e_msg)
 
             # sleep for some time, to avoid the API call limit
             time.sleep(10)
@@ -163,7 +187,7 @@ def userQuery(prompt_list, graph_json):
         print("=========Current query process is done!=========")
         print(requestData['original-prompt'])
         print("Total test times: ", EACH_PROMPT_RUN_TIME)
-        print("Testing accuracy: ", prompt_accu/EACH_PROMPT_RUN_TIME)
+        print("Testing accuracy: ", prompt_accu / EACH_PROMPT_RUN_TIME)
 
     return ret
 
@@ -187,6 +211,7 @@ def ground_truth_check_debug(requestData, ground_truth_ret, ret, llm_output_toke
             writer.write({"LLM code exec": ret['data']})
     return None
 
+
 def ground_truth_check_accu(count, requestData, ground_truth_ret, ret, llm_output_token_count):
     print("Pass the test!")
     count += 1
@@ -200,6 +225,22 @@ def ground_truth_check_accu(count, requestData, ground_truth_ret, ret, llm_outpu
             writer.write({"Ground truth exec": ground_truth_ret['data']})
             writer.write({"LLM code exec": ret['data']})
     return count
+
+
+def exception_logging(requestData, ground_truth_ret, llm_answer, llm_output_token_count, exception_msg):
+    print("Error will be logged!")
+
+    # Save requestData, code, ground_truth_ret['data'] into a JsonLine file
+    with jsonlines.open(OUTPUT_EXCEPTIONS_PATH, mode='a') as writer:
+        writer.write(requestData['original-prompt'])
+        writer.write({"Token count input": llm_input_token_count})
+        writer.write({"Token count output": llm_output_token_count})
+        if ground_truth_ret['type'] == 'graph':
+            writer.write({"Ground truth exec": json_graph.adjacency_data(ground_truth_ret['data'])})
+        else:
+            writer.write({"Ground truth exec": ground_truth_ret['data']})
+        writer.write({"LLM code exec": llm_answer})
+        writer.write({"Exceptions": exception_msg})
 
 def main():
     # create 'output.jsonl' file if it does not exist
@@ -245,5 +286,5 @@ def main():
     userQuery(prompt_list, graph_json)
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()

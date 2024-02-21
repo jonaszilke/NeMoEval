@@ -21,28 +21,28 @@ from langchain.llms import OpenAI
 # Load environ variables from .env, will not override existing environ variables
 load_dotenv()
 
-OPENAI_API_BASE = os.getenv('OPENAI_API_BASE')
+#OPENAI_API_BASE = os.getenv('OPENAI_API_BASE')
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # For GPT in Azure
-llm = AzureChatOpenAI(
-    openai_api_type='azure',
-    openai_api_base=OPENAI_API_BASE,
-    openai_api_version="2023-05-15",
-    deployment_name='gpt-4-32k',
-    model_name='gpt-4-32k',
-    openai_api_key=OPENAI_API_KEY,
-    temperature=0,
-    max_tokens=4000,
-    )
+#llm = AzureChatOpenAI(
+#    openai_api_type='azure',
+#    openai_api_base=OPENAI_API_BASE,
+#    openai_api_version="2023-05-15",
+#    deployment_name='gpt-4-32k',
+#    model_name='gpt-4-32k',
+#    openai_api_key=OPENAI_API_KEY,
+#    temperature=0,
+#    max_tokens=4000,
+#    )
 
 # Without Azure key
-# llm = OpenAI(
-#     model_name='text-davinci-003',
-#     temperature=0,
-#     max_tokens=2048,
-#     openai_api_key=OPENAI_API_KEY
-#     )
+llm = OpenAI(
+ model_name='gpt-4',
+ temperature=0,
+ max_tokens=2048,
+ openai_api_key=OPENAI_API_KEY
+ )
 
 
 prefix = """

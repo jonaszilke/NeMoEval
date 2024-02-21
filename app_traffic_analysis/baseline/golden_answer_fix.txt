@@ -1,0 +1,48 @@
+def ground_truth_process_graph(graph_data):
+    # Create a dictionary to store the total byte weight of each node
+    node_byte_weight = {}
+    # Iterate through the edges
+    for edge in graph_data.edges():
+        # Get the source and target IP addresses
+        source_ip = graph_data.edges[edge]['source_ip_address']
+        target_ip = graph_data.edges[edge]['target_ip_address']
+        # Get the byte weight of the edge
+        byte_weight = graph_data.edges[edge]['byte_weight']
+        # Add the byte weight to the total byte weight of the source node
+        if source_ip in node_byte_weight:
+            node_byte_weight[source_ip] += byte_weight
+        else:
+            node_byte_weight[source_ip] = byte_weight
+        # Add the byte weight to the total byte weight of the target node
+        if target_ip in node_byte_weight:
+            node_byte_weight[target_ip] += byte_weight
+        else:
+            node_byte_weight[target_ip] = byte_weight
+    # Iterate through the nodes
+    for node in graph_data.nodes():
+        # Get the IP address of the node
+        ip_address = graph_data.nodes[node]['ip_address']
+        # Get the total byte weight of the node
+
+	# FEHLER gefixed !! ########
+        byte_weight = node_byte_weight[ip_address] if ip_address in node_byte_weight else 0
+	####################
+
+        # Set the color of the node based on the total byte weight
+        if byte_weight < 10:
+            graph_data.nodes[node]['color'] = '#FF0000'
+        elif byte_weight < 20:
+            graph_data.nodes[node]['color'] = '#FF7F00'
+        elif byte_weight < 30:
+            graph_data.nodes[node]['color'] = '#FFFF00'
+        elif byte_weight < 40:
+            graph_data.nodes[node]['color'] = '#00FF00'
+        else:
+            graph_data.nodes[node]['color'] = '#0000FF'
+    # Return the graph object
+    return_object = {
+        'type': 'graph',
+        'data': graph_data
+    }
+    return return_object
+
