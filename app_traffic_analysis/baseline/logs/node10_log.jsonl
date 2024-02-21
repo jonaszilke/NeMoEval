@@ -1,0 +1,94 @@
+"How many nodes are in the graph? Return only the number."
+{"Token count input": 682}
+{"Token count output": 259}
+{"Result": "Pass"}
+{"Ground truth exec": "10"}
+{"LLM code exec": "10"}
+"How many nodes and edges are in the graph? Return a list."
+{"Token count input": 682}
+{"Token count output": 515}
+{"Result": "Pass"}
+{"Ground truth exec": [10, 3]}
+{"LLM code exec": [10, 3]}
+"Add a label app:prod to nodes with address prefix 15.76 and add the label app:test to nodes with address prefix 149.196. Return the networkx graph object."
+{"Token count input": 682}
+{"Token count output": 1194}
+{"Result": "Pass"}
+"Show me the unique labels and the number of nodes per label. Return a table with header 'Label', 'Number of Nodes' on the first row."
+{"Token count input": 682}
+{"Token count output": 293}
+{"Result": "Pass"}
+{"Ground truth exec": [["Label", "Number of Nodes"], ["type=VM", 10]]}
+{"LLM code exec": [["Label", "Number of Nodes"], ["type=VM", 10]]}
+"Remove the label 'type=VM' from all the nodes. Return the networkx graph object."
+{"Token count input": 682}
+{"Token count output": 1755}
+{"Result": "Pass"}
+"What are max degree and min degree in the graph? Return a table with with header 'Max degree', 'Min degree' on the first row."
+{"Token count input": 682}
+{"Token count output": 281}
+{"Result": "Fail"}
+{"Ground truth exec": [["Max degree", "Min degree"], [2, 0]]}
+{"LLM code exec": [["Max degree", "Min degree"], [3, 1]]}
+"Color the node with max degree red and min degree green. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1905}
+{"Result": "Fail"}
+"How many nodes are there that have an edge to nodes with labels app:prod or app:test and doesn't have either of those labels? Return only the number."
+{"Token count input": 700}
+{"Token count output": 351}
+{"Result": "Fail"}
+{"Ground truth exec": "0"}
+{"LLM code exec": "The graph data provided does not contain any nodes with labels 'app:prod' or 'app:test'. Therefore, the number of nodes that have an edge to nodes with these labels and doesn't have either of those labels is 0."}
+"Color the size of the node with max degree green and double it's size. Return the networkx graph object."
+{"Token count input": 694}
+{"Token count output": 1895}
+{"Result": "Pass"}
+"Cut the graph into two parts such that the number of edges between the cuts is same. Color two parts with red and blue. Return the networkx graph object."
+{"Token count input": 694}
+{"Token count output": 1849}
+{"Result": "Fail"}
+"Identify the unique labels in the graph. Create a new graph with a node for each unique label. For each edge in the old graph, identify the labels of the nodes on either side of the edge. Connect the nodes with those labels in the new graph if they are not already connected by an edge. Return the networkx graph object."
+{"Token count input": 694}
+{"Token count output": 393}
+{"Result": "Fail"}
+"Calculate the total byte weight of edges incident on each node, use kmeans clustering to cluster the total byte weights into 5 clusters, apply the cluster labels as strings to the nodes and pick and assign colors to the nodes based on their cluster labels. Shape the data correctly using numpy before passing it to kmeans. Return the networkx graph object."
+{"Token count input": 692}
+{"Token count output": 1534}
+{"Result": "Fail"}
+"How many maximal cliques are in the graph? Return only the number."
+{"Token count input": 692}
+{"Token count output": 329}
+{"Result": "Fail"}
+{"Ground truth exec": "9"}
+{"LLM code exec": "The number of maximal cliques in the graph is calculated by a specific graph processing algorithm. Without running the algorithm on the provided graph data, it's impossible to provide the exact number."}
+"DATENSATZ ist DOPPELT !!!!! Color the nodes to reflect a heatmap based on the total byte weight of the edges. Return the networkx graph object."
+{"Token count input": 665}
+{"Token count output": 1897}
+{"Result": "Fail"}
+"Bisect the network such that the number of nodes on either side of the cut is equal. Color the graph based on the bisection. Return the networkx graph object."
+{"Token count input": 665}
+{"Token count output": 1869}
+{"Result": "Fail"}
+"How many unique nodes have edges to nodes with label app:prod and doesn't contain the label app:prod? Return only the number."
+{"Token count input": 665}
+{"Token count output": 359}
+{"Result": "Fail"}
+{"Ground truth exec": "0"}
+{"LLM code exec": "The graph data provided does not contain any nodes with the label 'app:prod'. Therefore, the number of unique nodes that have edges to nodes with label 'app:prod' and doesn't contain the label 'app:prod' is 0."}
+"Show me the unique IP address prefix and the number of nodes per prefix. Return a table without headers."
+{"Token count input": 665}
+{"Token count output": 477}
+{"Result": "Fail"}
+{"Ground truth exec": [["10", 9], ["149", 1]]}
+{"LLM code exec": [["10.55.223", 1], ["149.196.199", 1], ["10.55.136", 1], ["10.55.204", 1], ["10.55.11", 1], ["10.55.111", 1], ["10.55.192", 1], ["10.55.25", 1], ["10.55.218", 1], ["10.55.227", 1]]}
+"Delete all edges whose byte weight is less than the median byte weight in the whole graph without using the statistics library. Make sure to compute the median and not the mean. Return the networkx graph object."
+{"Token count input": 665}
+{"Token count output": 1543}
+{"Result": "Fail"}
+"What is the average byte weight and connection weight of edges incident on nodes with labels app:prod? Return a table with header 'Average byte weight', 'Average connection weight' on the first row."
+{"Token count input": 665}
+{"Token count output": 273}
+{"Result": "Fail"}
+{"Ground truth exec": [["Average byte weight", "Average connection weight"], [0, 0]]}
+{"LLM code exec": [["Average byte weight", "Average connection weight"]]}
