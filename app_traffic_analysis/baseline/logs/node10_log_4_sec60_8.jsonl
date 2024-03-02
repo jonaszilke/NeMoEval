@@ -1,0 +1,68 @@
+"Assign a unique color for each /16 IP address prefix and color the nodes accordingly. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1859}
+{"Result": "Fail"}
+"Assign a unique color for each /16 IP address prefix and color the nodes accordingly. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1907}
+{"Result": "Fail"}
+"Assign a unique color for each /16 IP address prefix and color the nodes accordingly. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1887}
+{"Result": "Fail"}
+"Assign a unique color for each /16 IP address prefix and color the nodes accordingly. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1859}
+{"Result": "Fail"}
+"Assign a unique color for each /16 IP address prefix and color the nodes accordingly. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1925}
+{"Result": "Fail"}
+"Color the size of the node with max degree green and double it's size. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1907}
+{"Result": "Pass"}
+"Color the size of the node with max degree green and double it's size. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1907}
+{"Result": "Pass"}
+"Color the size of the node with max degree green and double it's size. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1902}
+{"Result": "Pass"}
+"Color the size of the node with max degree green and double it's size. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1897}
+{"Result": "Pass"}
+"Color the size of the node with max degree green and double it's size. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 2127}
+{"Result": "Pass"}
+"Cut the graph into two parts such that the number of edges between the cuts is same. Color two parts with red and blue. Return the networkx graph object."
+{"Token count input": 700}
+{"Token count output": 1436}
+{"Result": "Fail"}
+"Cut the graph into two parts such that the number of edges between the cuts is same. Color two parts with red and blue. Return the networkx graph object."
+{"Token count input": 548}
+{"Token count output": 1405}
+{"Result": "Pass"}
+"Cut the graph into two parts such that the number of edges between the cuts is same. Color two parts with red and blue. Return the networkx graph object."
+{"Token count input": 548}
+{"Token count output": 1849}
+{"Result": "Fail"}
+"Cut the graph into two parts such that the number of edges between the cuts is same. Color two parts with red and blue. Return the networkx graph object."
+{"Token count input": 548}
+{"Token count output": 1851}
+{"Result": "Fail"}
+"Cut the graph into two parts such that the number of edges between the cuts is same. Color two parts with red and blue. Return the networkx graph object."
+{"Token count input": 548}
+{"Token count output": 1885}
+{"Result": "Fail"}
+"Cut the graph into two parts such that the number of edges between the cuts is same. Color two parts with red and blue. Return the networkx graph object."
+{"Token count input": 548}
+{"Token count output": 1875}
+{"Result": "Fail"}
+"Identify the unique labels in the graph. Create a new graph with a node for each unique label. For each edge in the old graph, identify the labels of the nodes on either side of the edge. Connect the nodes with those labels in the new graph if they are not already connected by an edge. Return the networkx graph object."
+{"Token count input": 548}
+{"Token count output": 406}
+{"Result": "Fail"}

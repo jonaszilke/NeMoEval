@@ -1,0 +1,32 @@
+"How many nodes are in the graph? Return only the number."
+{"Token count input": 676}
+{"Token count output": 259}
+{"Result": "Pass"}
+{"Ground truth exec": "10"}
+{"LLM code exec": "10"}
+"How many nodes and edges are in the graph? Return a list."
+{"Token count input": 676}
+{"Token count output": 560}
+{"Result": "Pass"}
+{"Ground truth exec": [10, 3]}
+{"LLM code exec": [10, 3]}
+"Add a label app:prod to nodes with address prefix 15.76 and add the label app:test to nodes with address prefix 149.196. Return the networkx graph object."
+{"Token count input": 676}
+{"Token count output": 2099}
+{"Result": "Pass"}
+"Show me the unique labels and the number of nodes per label. Return a table with header 'Label', 'Number of Nodes' on the first row."
+{"Token count input": 676}
+{"Token count output": 293}
+{"Result": "Pass"}
+{"Ground truth exec": [["Label", "Number of Nodes"], ["type=VM", 10]]}
+{"LLM code exec": [["Label", "Number of Nodes"], ["type=VM", 10]]}
+"Remove the label 'type=VM' from all the nodes. Return the networkx graph object."
+{"Token count input": 676}
+{"Token count output": 1755}
+{"Result": "Pass"}
+"What are max degree and min degree in the graph? Return a table with with header 'Max degree', 'Min degree' on the first row."
+{"Token count input": 676}
+{"Token count output": 281}
+{"Result": "Fail"}
+{"Ground truth exec": [["Max degree", "Min degree"], [2, 0]]}
+{"LLM code exec": [["Max degree", "Min degree"], [3, 1]]}

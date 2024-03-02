@@ -1,0 +1,54 @@
+"How many nodes are in the graph? Return only the number."
+{"Token count input": 675}
+{"Token count output": 259}
+{"Result": "Pass"}
+{"Ground truth exec": "10"}
+{"LLM code exec": "10"}
+"How many nodes and edges are in the graph? Return a list."
+{"Token count input": 675}
+{"Token count output": 493}
+{"Result": "Pass"}
+{"Ground truth exec": [10, 3]}
+{"LLM code exec": [10, 3]}
+"Add a label app:prod to nodes with address prefix 15.76 and add the label app:test to nodes with address prefix 149.196. Return the networkx graph object."
+{"Token count input": 675}
+{"Token count output": 2109}
+{"Result": "Pass"}
+"Show me the unique labels and the number of nodes per label. Return a table with header 'Label', 'Number of Nodes' on the first row."
+{"Token count input": 675}
+{"Token count output": 293}
+{"Result": "Pass"}
+{"Ground truth exec": [["Label", "Number of Nodes"], ["type=VM", 10]]}
+{"LLM code exec": [["Label", "Number of Nodes"], ["type=VM", 10]]}
+"Remove the label 'type=VM' from all the nodes. Return the networkx graph object."
+{"Token count input": 675}
+{"Token count output": 1755}
+{"Result": "Pass"}
+"What are max degree and min degree in the graph? Return a table with with header 'Max degree', 'Min degree' on the first row."
+{"Token count input": 675}
+{"Token count output": 281}
+{"Result": "Fail"}
+{"Ground truth exec": [["Max degree", "Min degree"], [2, 0]]}
+{"LLM code exec": [["Max degree", "Min degree"], [3, 1]]}
+"How many nodes are there that have an edge to nodes with labels app:prod or app:test and doesn't have either of those labels? Return only the number."
+{"Token count input": 687}
+{"Token count output": 351}
+{"Result": "Fail"}
+{"Ground truth exec": "0"}
+{"LLM code exec": "The graph data provided does not contain any nodes with labels 'app:prod' or 'app:test'. Therefore, the number of nodes that have an edge to nodes with these labels and doesn't have either of those labels is 0."}
+"Assign a unique color for each /16 IP address prefix and color the nodes accordingly. Return the networkx graph object."
+{"Token count input": 687}
+{"Token count output": 1929}
+{"Result": "Fail"}
+"Color the size of the node with max degree green and double it's size. Return the networkx graph object."
+{"Token count input": 687}
+{"Token count output": 2115}
+{"Result": "Pass"}
+"Cut the graph into two parts such that the number of edges between the cuts is same. Color two parts with red and blue. Return the networkx graph object."
+{"Token count input": 687}
+{"Token count output": 1849}
+{"Result": "Fail"}
+"Identify the unique labels in the graph. Create a new graph with a node for each unique label. For each edge in the old graph, identify the labels of the nodes on either side of the edge. Connect the nodes with those labels in the new graph if they are not already connected by an edge. Return the networkx graph object."
+{"Token count input": 687}
+{"Token count output": 467}
+{"Result": "Fail"}
