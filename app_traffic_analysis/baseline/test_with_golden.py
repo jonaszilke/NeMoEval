@@ -18,13 +18,14 @@ import sys
 import numpy as np
 import traceback as tb
 from sklearn.cluster import KMeans
+import openai
 
 # Load environ variables from .env, will not override existing environ variables
 load_dotenv()
 
-EACH_PROMPT_RUN_TIME = 1
-OUTPUT_JSONL_PATH = 'logs/node10_log.jsonl'
-OUTPUT_EXCEPTIONS_PATH = "logs/node10_exceptions_log.jsonl"
+EACH_PROMPT_RUN_TIME = 5
+OUTPUT_JSONL_PATH = 'logs/node10_log_4_sec60_8.jsonl'
+OUTPUT_EXCEPTIONS_PATH = "logs/node10_exceptions_log_4_sec60_8.jsonl"
 GRAPH_PATH = "../data/graph_data/node10.json"
 
 
@@ -175,14 +176,12 @@ def userQuery(prompt_list, graph_json):
                                                               llm_output_token_count)
                     else:
                         ground_truth_check_debug(requestData, ground_truth_ret, ret, llm_output_token_count)
-
             except Exception as e:
-                #e_msg = ''.join(tb.format_exception(None, e, e.__traceback__))
                 e_msg = ''.join(tb.format_exception(e))
                 exception_logging(requestData, ground_truth_ret, llm_answer, llm_output_token_count, e_msg)
 
             # sleep for some time, to avoid the API call limit
-            time.sleep(10)
+            time.sleep(60)
 
         print("=========Current query process is done!=========")
         print(requestData['original-prompt'])
@@ -235,10 +234,13 @@ def exception_logging(requestData, ground_truth_ret, llm_answer, llm_output_toke
         writer.write(requestData['original-prompt'])
         writer.write({"Token count input": llm_input_token_count})
         writer.write({"Token count output": llm_output_token_count})
-        if ground_truth_ret['type'] == 'graph':
-            writer.write({"Ground truth exec": json_graph.adjacency_data(ground_truth_ret['data'])})
-        else:
-            writer.write({"Ground truth exec": ground_truth_ret['data']})
+        try:
+            if ground_truth_ret['type'] == 'graph':
+                writer.write({"Ground truth exec": json_graph.adjacency_data(ground_truth_ret['data'])})
+            else:
+                writer.write({"Ground truth exec": ground_truth_ret['data']})
+        except:
+            writer.write({"Ground truth exec": ground_truth_ret})
         writer.write({"LLM code exec": llm_answer})
         writer.write({"Exceptions": exception_msg})
 
